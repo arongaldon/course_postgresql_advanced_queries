@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  db:
+    image: postgres
+    restart: always
+    env_file:
+      - .env.db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  admin:
+    image: docker.io/dpage/pgadmin4
+    restart: always
+    env_file:
+      - .env.admin
+    ports:
+      - 1080:80
+      - 1443:443
+    depends_on:
+      - db
+volumes:
+  pgdata:
