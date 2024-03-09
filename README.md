@@ -120,7 +120,16 @@ PERCENT_RANK() OVER (
 )
 ```
 
-* Return the relative position of a value in a set of values.
+* Assign a rank to every row in each partition of a result set. Unlike the RANK() function, DENSE_RANK() always returns consecutive rank values. Both RANK() and DENSE_RANK() will return the same rank given the same input values.
+
+```SQL
+DENSE_RANK() OVER (
+    [PARTITION BY partition_expression, ... ]
+    ORDER BY sort_expression [ASC | DESC], ...
+)
+```
+
+* Return the relative position of a value in a set of values (the row's sorted position, divided by the number of rows in the data set).
 
 ```SQL
 CUME_DIST() OVER (
@@ -128,3 +137,95 @@ CUME_DIST() OVER (
     ORDER BY sort_expression [ASC | DESC], ...
 )
 ```
+
+### c5 Output values with conditions
+
+* Conditions.
+
+```SQL
+CASE
+    WHEN condition1 THEN result1
+    WHEN condition2 THEN result2
+    ...
+    ELSE resultN
+END
+```
+
+* Merge multiple columns into a single value. It returns the first non-null value from a list of expressions.
+
+```SQL
+SELECT
+    description,
+    COALESCE(string_agg(CAST(id AS VARCHAR), ','), '') AS ids
+FROM table
+GROUP BY description;
+```
+
+* Compares two expressions. If the two expressions are equal, it returns NULL. Otherwise, it returns the first expression.
+
+```SQL
+NULLIF(expression1, expression2)
+```
+
+### More techniques
+
+* Assigns a unique integer value to each row returned by a query.
+
+```SQL
+ROW_NUMBER() OVER (
+    [PARTITION BY column_1, column_2, ...]
+    [ORDER BY column_3, column_4, ...]
+)
+```
+
+* Cast function and cast operator.
+
+```SQL
+CAST(value AS target_type);
+value::target_type
+```
+
+* Access to data from the next/previous row in the table. Can be used to move rows for instance.
+
+```SQL
+LEAD(expression [, offset [, default_value]]) OVER (
+    [PARTITION BY partition_expression, ...]
+    ORDER BY sort_expression [ASC | DESC], ...
+)
+LAG(expression [, offset [, default_value]]) OVER (
+    [PARTITION BY partition_expression, ...]
+    ORDER BY sort_expression [ASC | DESC], ...
+)
+```
+
+* Creating a series of values within a specified range. It’s commonly used for generating sequences of numbers, dates, or timestamps.
+
+```SQL
+generate_series(start, stop, [step/interval])
+```
+
+* Series of timestamps.
+
+```SQL
+generate_series(
+    '2008-03-01 00:00'::timestamp,
+    '2008-03-04 12:00',
+    '10 hours'
+)
+```
+
+* Regular expressions: `'input string' [match operator] [character sequence]`
+
+* Regular Expression Match Operators:
+  * `~` string case sensitive
+  * `~*` string case insensitive
+  * `!~` excludes string case sensitive
+  * `!~*` excludes string case insensitive
+
+* Regular Expression Character Sequences:
+  * `~ 'abc'` matches to the string 'abc' only: 'abcd', 'xabcy'
+  * `~ 'c.t' .` matches any single character: 'cat', 'cot', but not 'coat'
+  * `~ '(at|an)' | inside ( )` indicates OR: will match 'boat', 'plane', but not 'train'
+  * `~ '[abc]' [ ]` defines a character set: 'cat', 'boy', but not 'dog'
+  * `~ '^a' ^` anchors the pattern to the start: 'apple', but not 'banana'
+  * `~ 'a$' $` anchors the pattern to the end: 'banana', but not 'apple'
