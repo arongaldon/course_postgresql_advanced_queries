@@ -56,12 +56,22 @@ WINDOW /* name */ AS (PARTITION BY /* col */)
 /* aggregate function */ OVER(ORDER BY /* col */ ROWS BETWEEN /* begin */ PRECEDING AND /* end */ FOLLOWING) AS /* "name" */
 ```
 
-* Return values at specific locations within a window
+* Return a value evaluated against the first row in a sorted partition of a result set.
 
 ```SQL
-FIRST_VALUE(/* col */) OVER(ORDER BY /* col */ ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
-LAST_VALUE(/* col */) OVER(ORDER BY /* col */ ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
-NTH_VALUE(/* col */, /* offset */) OVER(ORDER BY /* col */ ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+FIRST_VALUE(expression) OVER (
+    [PARTITION BY partition_expression, ... ]
+    ORDER BY sort_expression [ASC | DESC], ...
+)
+```
+
+* Return a value evaluated against the last row in a sorted partition of a result set.
+
+```SQL
+LAST_VALUE(expression) OVER (
+    [PARTITION BY partition_expression, ... ]
+    ORDER BY sort_expression [ASC | DESC], ...
+)
 ```
 
 ### c3 Statistics on sorted data
@@ -87,5 +97,34 @@ PERCENTILE_CONT(.75) WITHIN GROUP (ORDER BY /* col */) AS "3rd quartile"
 NTILE(buckets) OVER (
     [PARTITION BY partition_expression, ...]
     [ORDER BY sort_expression [ASC | DESC], ...]
+)
+```
+
+### c4 Ranking
+
+* Assign a rank to each row within a partition of the result set.
+
+```SQL
+RANK() OVER (
+    [PARTITION BY partition_expression, ... ]
+    ORDER BY sort_expression [ASC | DESC], ...
+)
+```
+
+* Evaluate the relative standing of a value within a set of values.
+
+```SQL
+PERCENT_RANK() OVER (
+    [PARTITION BY partition_expression, ... ]
+    ORDER BY sort_expression [ASC | DESC], ...
+)
+```
+
+* Return the relative position of a value in a set of values.
+
+```SQL
+CUME_DIST() OVER (
+    [PARTITION BY partition_expression, ... ]
+    ORDER BY sort_expression [ASC | DESC], ...
 )
 ```
